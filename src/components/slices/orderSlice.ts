@@ -4,17 +4,19 @@ import { orderBurgerApi } from '../../utils/burger-api';
 import { RootState } from '../../services/store';
 
 type TOrderState = {
-  orderData: TOrder | null;
-  orderNumber: number | null;
   isLoading: boolean;
   error: string | null;
+  orderRequest: boolean;
+  orderModalData: TOrder | null;
+  // status: 'created' | 'pending' | 'done' | undefined;
 };
 
 const initialState: TOrderState = {
-  orderData: null,
-  orderNumber: null,
-  isLoading: false,
-  error: null
+  isLoading: true,
+  error: null,
+  orderRequest: false,
+  orderModalData: null
+  // status: undefined
 };
 
 export const createOrder = createAsyncThunk(
@@ -34,24 +36,27 @@ const orderSlice = createSlice({
   initialState,
   reducers: {
     clearOrder: (state) => {
-      state.orderData = null;
-      state.orderNumber = null;
+      state.orderModalData = null;
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
         state.isLoading = true;
+        state.orderRequest = true;
         state.error = null;
+        // state.status = 'pending';
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.orderData = action.payload;
-        state.orderNumber = action.payload.number;
+        state.orderRequest = false;
+        state.orderModalData = action.payload;
+        // state.status = 'done';
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.orderRequest = false;
+        state.error = action.error.message ?? 'Error';
       });
   }
 });
@@ -60,16 +65,11 @@ export const { clearOrder } = orderSlice.actions;
 export default orderSlice.reducer;
 
 // Селекторы
-export const selectCurrentOrder = (state: { order: TOrderState }) =>
-  state.order.orderData;
-export const selectOrderNumber = (state: { order: TOrderState }) =>
-  state.order.orderNumber;
-export const selectOrderLoading = (state: { order: TOrderState }) =>
+export const selectOrderModalData = (state: RootState) =>
+  state.order.orderModalData;
+export const selectIsLoading = (state: { order: TOrderState }) =>
   state.order.isLoading;
+export const selectOrderRequest = (state: { order: TOrderState }) =>
+  state.order.orderRequest;
 export const selectOrderError = (state: { order: TOrderState }) =>
   state.order.error;
-
-// export const selectOrdersInfoData =
-//   (number: string) => (state: RootState) => {
-//     if (state.order.feeds)
-//   };

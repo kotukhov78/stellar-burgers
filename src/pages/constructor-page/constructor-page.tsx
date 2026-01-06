@@ -18,7 +18,7 @@ export const ConstructorPage: FC = () => {
   const dispatch = useDispatch();
   const ingredients = useSelector(selectIngredients);
   const isIngredientsLoading = useSelector(selectIngredientsLoading);
-  // const error = useSelector(selectIngredientsError);
+  const error = useSelector(selectIngredientsError);
 
   useEffect(() => {
     if (ingredients.length === 0) {
@@ -26,11 +26,13 @@ export const ConstructorPage: FC = () => {
     }
   }, [dispatch, ingredients.length]);
 
-  // if (error) {
-  //   return <div>Ошибка: {error}</div>;
-  // }
-
-  // const isIngredientsLoading = false;
+  if (error) {
+    return (
+      <p className='text text_type_main-large text_color_error'>
+        Ошибка загрузки ингредиентов: {error}
+      </p>
+    );
+  }
 
   return (
     <>

@@ -1,39 +1,30 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { TIngredient } from '../../utils/types';
-// import { getIngredientsApi } from '../../utils/burger-api';
+import { createSlice } from '@reduxjs/toolkit';
+import { TConstructorIngredient, TIngredient } from '../../utils/types';
 import { RootState } from '../../services/store';
 
 type TConstructorState = {
-  constructorItems: TIngredient[];
-  orderRequest: boolean;
-  orderModalData: string | null;
-  error: string | null;
-  isLoading: boolean;
+  bun: TIngredient | null;
+  ingredients: TConstructorIngredient[];
 };
 
 export const initialState: TConstructorState = {
-  constructorItems: [],
-  orderRequest: false,
-  orderModalData: null,
-  error: null,
-  isLoading: false
+  bun: null,
+  ingredients: []
 };
-
-// Асинхронная Thunk-функция
-// export const getIngredients = createAsyncThunk(
-//   'burgerConstructor/getIngredients',
-//   async () => {
-//     const ingredients = await getIngredientsApi();
-//     return ingredients;
-//   }
-// );
 
 const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    setConstructorItems: (state, action: PayloadAction<TIngredient[]>) => {
-      state.constructorItems = action.payload;
+    addIngredient(state, action) {
+      if (action.payload.type === 'bun') {
+        state.bun = action.payload;
+      } else {
+        state.ingredients.push(action.payload);
+      }
+    },
+    removeIngredient(state, action) {
+      state.ingredients.splice(action.payload, 1);
     }
   }
   // extraReducers: (builder) => {
@@ -56,11 +47,9 @@ const burgerConstructorSlice = createSlice({
 });
 
 export default burgerConstructorSlice.reducer;
+export const { removeIngredient, addIngredient } =
+  burgerConstructorSlice.actions;
 
 // Селекторы
 export const selectConstructorItems = (state: RootState) =>
-  state.burgerConstructor.constructorItems;
-// export const selectConstructorLoading = (state: RootState) =>
-//   state.burgerConstructor.isLoading;
-// export const selectConstructorError = (state: RootState) =>
-//   state.burgerConstructor.error;
+  state.burgerConstructor;

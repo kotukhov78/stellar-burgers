@@ -31,10 +31,6 @@ export const getIngredients = createAsyncThunk(
       return rejectWithValue(e.message);
     }
   }
-  // async () => {
-  //   const ingredients = await getIngredientsApi();
-  //   return ingredients;
-  // }
 );
 
 const ingredientsSlice = createSlice({

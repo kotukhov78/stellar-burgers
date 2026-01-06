@@ -3,39 +3,45 @@ import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
-import { selectCurrentOrder } from '../slices/orderSlice';
 import { selectIngredients } from '../slices/ingredientsSlice';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+// import { selectOrderModalData } from '../slices/orderSlice';
 import {
-  fetchProfileOrders,
-  selectProfileOrders
-} from '../slices/profileOrdersSlice';
+  fetchOrderByNumber,
+  selectFeeds,
+  selectSelectedOrder
+} from '../slices/feedsSlice';
+import { selectProfileOrders } from '../slices/profileOrdersSlice';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
-  const orderData = useSelector(selectCurrentOrder);
+  const orderModalData = useSelector(selectSelectedOrder);
+  const userOrders = useSelector(selectProfileOrders);
+  const feedsData = useSelector(selectFeeds);
   const ingredients = useSelector(selectIngredients);
+
   const { number } = useParams<{ number: string }>();
-  // const location = useLocation();
   const dispatch = useDispatch();
 
+  let orderData = orderModalData;
+  const orderNumber = Number(number);
+
+  // для отображения на отдельном экране
   useEffect(() => {
-    if (number) {
-      dispatch(fetchProfileOrders());
+    if (!orderData && number) {
+      dispatch(fetchOrderByNumber(orderNumber));
     }
   }, [dispatch, number]);
 
-  // const orderData = {
-  //   createdAt: '',
-  //   ingredients: [],
-  //   _id: '',
-  //   status: '',
-  //   name: '',
-  //   updatedAt: 'string',
-  //   number: 0
-  // };
+  if (!orderData && number) {
+    orderData =
+      feedsData?.find((order) => order.number === orderNumber) || null;
 
-  // const ingredients: TIngredient[] = [];
+    if (!orderData) {
+      orderData =
+        userOrders.find((order) => order.number === orderNumber) || null;
+    }
+  }
 
   /* Готовим данные для отображения */
   const orderInfo = useMemo(() => {

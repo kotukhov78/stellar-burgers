@@ -57,10 +57,7 @@ const AppRouter: FC = () => {
   // при загрузке страницы грузим ингридиенты и проверяем пользователя
   useEffect(() => {
     dispatch(getIngredients());
-    const accessToken = getCookie('accessToken');
-    if (accessToken) {
-      dispatch(checkUserAuth());
-    }
+    dispatch(checkUserAuth());
   }, [dispatch]);
 
   return (
@@ -69,6 +66,19 @@ const AppRouter: FC = () => {
         {/* Основные маршруты */}
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
+
+        {/* маршруты для перехода по прямой ссылке */}
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRouter>
+              <OrderInfo />
+            </ProtectedRouter>
+          }
+        />
+
         <Route
           path='/login'
           element={
@@ -88,7 +98,7 @@ const AppRouter: FC = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRouter onlyUnAuth>
+            <ProtectedRouter>
               <ForgotPassword />
             </ProtectedRouter>
           }
@@ -96,7 +106,7 @@ const AppRouter: FC = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRouter onlyUnAuth>
+            <ProtectedRouter>
               <ResetPassword />
             </ProtectedRouter>
           }

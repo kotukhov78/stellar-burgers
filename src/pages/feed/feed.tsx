@@ -1,23 +1,19 @@
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
-import { TOrder } from '@utils-types';
 import { FC, useEffect } from 'react';
 import {
   fetchFeeds,
   selectFeeds,
   selectFeedsError,
-  selectFeedsLoading,
-  selectTotalOrders,
-  selectTotalToday
+  selectFeedsLoading
 } from '../../components/slices/feedsSlice';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const Feed: FC = () => {
   /** TODO: взять переменную из стора */
-  // const orders: TOrder[] = [];
   const dispatch = useDispatch();
   const orders = useSelector(selectFeeds);
-  const loading = useSelector(selectFeedsLoading);
+  const isLoading = useSelector(selectFeedsLoading);
   const error = useSelector(selectFeedsError);
 
   useEffect(() => {
@@ -28,7 +24,7 @@ export const Feed: FC = () => {
     dispatch(fetchFeeds());
   };
 
-  if (loading) {
+  if (isLoading || !orders.length) {
     return <Preloader />;
   }
 
@@ -36,6 +32,5 @@ export const Feed: FC = () => {
     return <div>Ошибка: {error}</div>;
   }
 
-  // <FeedUI orders={orders} handleGetFeeds={() => {}} />;
   return <FeedUI orders={orders} handleGetFeeds={handleGetFeeds} />;
 };
