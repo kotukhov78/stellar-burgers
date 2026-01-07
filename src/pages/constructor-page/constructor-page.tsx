@@ -11,7 +11,7 @@ import {
   selectIngredients,
   selectIngredientsError,
   selectIngredientsLoading
-} from '../../components/slices/ingredientsSlice';
+} from '../../services/slices/ingredientsSlice';
 
 export const ConstructorPage: FC = () => {
   /** TODO: взять переменную из стора */

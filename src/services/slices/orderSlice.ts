@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { TOrder } from '../../utils/types';
 import { orderBurgerApi } from '../../utils/burger-api';
-import { RootState } from '../../services/store';
+import { RootState } from '../store';
 
 type TOrderState = {
   isLoading: boolean;
   error: string | null;
   orderRequest: boolean;
   orderModalData: TOrder | null;
-  // status: 'created' | 'pending' | 'done' | undefined;
 };
 
 const initialState: TOrderState = {
@@ -16,7 +15,6 @@ const initialState: TOrderState = {
   error: null,
   orderRequest: false,
   orderModalData: null
-  // status: undefined
 };
 
 export const createOrder = createAsyncThunk(
@@ -45,13 +43,11 @@ const orderSlice = createSlice({
         state.isLoading = true;
         state.orderRequest = true;
         state.error = null;
-        // state.status = 'pending';
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.isLoading = false;
         state.orderRequest = false;
         state.orderModalData = action.payload;
-        // state.status = 'done';
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.isLoading = false;

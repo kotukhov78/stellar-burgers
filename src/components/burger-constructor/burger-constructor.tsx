@@ -2,19 +2,21 @@ import { FC, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
-import { selectConstructorItems } from '../slices/constructorSlice';
+import {
+  clearConstructor,
+  selectConstructorItems
+} from '../../services/slices/constructorSlice';
 import { useNavigate } from 'react-router-dom';
 import {
   clearOrder,
   createOrder,
   selectOrderModalData,
   selectOrderRequest
-} from '../slices/orderSlice';
-import { selectIsAuthChecked } from '../slices/userSlice';
+} from '../../services/slices/orderSlice';
+import { selectIsAuthChecked } from '../../services/slices/userSlice';
 
 export const BurgerConstructor: FC = () => {
   /** TODO: взять переменные constructorItems, orderRequest и orderModalData из стора */
-
   const dispatch = useDispatch();
   const constructorItems = useSelector(selectConstructorItems);
   const orderRequest = useSelector(selectOrderRequest);
@@ -38,6 +40,7 @@ export const BurgerConstructor: FC = () => {
 
   const closeOrderModal = () => {
     dispatch(clearOrder());
+    dispatch(clearConstructor());
   };
 
   const price = useMemo(
@@ -49,8 +52,6 @@ export const BurgerConstructor: FC = () => {
       ),
     [constructorItems]
   );
-
-  // return null;
 
   return (
     <BurgerConstructorUI

@@ -24,10 +24,10 @@ import {
 import { FC, useEffect } from 'react';
 
 import { ProtectedRouter } from '../protected-router/protectedRouter';
-import { getIngredients } from '../slices/ingredientsSlice';
+import { getIngredients } from '../../services/slices/ingredientsSlice';
 import { useDispatch } from '../../services/store';
 import { getCookie } from '../../utils/cookie';
-import { checkUserAuth } from '../slices/userSlice';
+import { checkUserAuth } from '../../services/slices/userSlice';
 
 const App = () => (
   <div className={styles.app}>
@@ -57,7 +57,10 @@ const AppRouter: FC = () => {
   // при загрузке страницы грузим ингридиенты и проверяем пользователя
   useEffect(() => {
     dispatch(getIngredients());
-    dispatch(checkUserAuth());
+    const accessToken = getCookie('accessToken');
+    if (accessToken) {
+      dispatch(checkUserAuth());
+    }
   }, [dispatch]);
 
   return (
@@ -68,13 +71,42 @@ const AppRouter: FC = () => {
         <Route path='/feed' element={<Feed />} />
 
         {/* маршруты для перехода по прямой ссылке */}
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
-        <Route path='/feed/:number' element={<OrderInfo />} />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <div className={styles.detailPageWrap}>
+              <p className={`text text_type_main-large ${styles.detailHeader}`}>
+                Детали ингридиента
+              </p>
+              <IngredientDetails />
+            </div>
+          }
+        />
+        <Route
+          path='/feed/:number'
+          element={
+            <div className={styles.detailPageWrap}>
+              <p
+                className={`text text_type_digits-default ${styles.detailHeader}`}
+              >
+                #{orderNumber && orderNumber.padStart(6, '0')}
+              </p>
+              <OrderInfo />
+            </div>
+          }
+        />
         <Route
           path='/profile/orders/:number'
           element={
             <ProtectedRouter>
-              <OrderInfo />
+              <div className={styles.detailPageWrap}>
+                <p
+                  className={`text text_type_digits-default ${styles.detailHeader}`}
+                >
+                  #{orderNumber && orderNumber.padStart(6, '0')}
+                </p>
+                <OrderInfo />
+              </div>
             </ProtectedRouter>
           }
         />
@@ -98,7 +130,7 @@ const AppRouter: FC = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRouter>
+            <ProtectedRouter onlyUnAuth>
               <ForgotPassword />
             </ProtectedRouter>
           }
@@ -137,7 +169,11 @@ const AppRouter: FC = () => {
             path='/feed/:number'
             element={
               <Modal
-                title={orderNumber ? `#${orderNumber}` : 'Детали заказа'}
+                title={
+                  orderNumber
+                    ? `#${orderNumber && orderNumber.padStart(6, '0')}`
+                    : 'Детали заказа'
+                }
                 onClose={handleModalClose}
               >
                 <OrderInfo />
@@ -157,7 +193,11 @@ const AppRouter: FC = () => {
             element={
               <ProtectedRouter>
                 <Modal
-                  title={orderNumber ? `#${orderNumber}` : 'Детали заказа'}
+                  title={
+                    orderNumber
+                      ? `#${orderNumber && orderNumber.padStart(6, '0')}`
+                      : 'Детали заказа'
+                  }
                   onClose={handleModalClose}
                 >
                   <OrderInfo />

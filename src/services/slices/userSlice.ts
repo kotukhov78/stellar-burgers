@@ -9,7 +9,7 @@ import {
   TRegisterData,
   registerUserApi
 } from '../../utils/burger-api';
-import { RootState } from '../../services/store';
+import { RootState } from '../store';
 import { deleteCookie, setCookie } from '../../utils/cookie';
 
 type TUserState = {
@@ -87,18 +87,7 @@ export const logout = createAsyncThunk('user/logout', async () => {
 const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {
-    // setAuthChecked: (state, action) => {
-    //   state.isAuthChecked = action.payload;
-    // },
-    // setUser: (state, action) => {
-    //   state.user = action.payload;
-    // },
-    // logout: (state) => {
-    //   state.user = null;
-    //   state.isAuthChecked = false;
-    // }
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(checkUserAuth.pending, (state) => {

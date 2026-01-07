@@ -3,19 +3,18 @@ import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
-import { selectIngredients } from '../slices/ingredientsSlice';
+import { selectIngredients } from '../../services/slices/ingredientsSlice';
 import { useParams } from 'react-router-dom';
-// import { selectOrderModalData } from '../slices/orderSlice';
 import {
   fetchOrderByNumber,
   selectFeeds,
   selectSelectedOrder
-} from '../slices/feedsSlice';
-import { selectProfileOrders } from '../slices/profileOrdersSlice';
+} from '../../services/slices/feedsSlice';
+import { selectProfileOrders } from '../../services/slices/profileOrdersSlice';
 
 export const OrderInfo: FC = () => {
   /** TODO: взять переменные orderData и ingredients из стора */
-  const orderModalData = useSelector(selectSelectedOrder);
+  const orderSelected = useSelector(selectSelectedOrder);
   const userOrders = useSelector(selectProfileOrders);
   const feedsData = useSelector(selectFeeds);
   const ingredients = useSelector(selectIngredients);
@@ -23,8 +22,8 @@ export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
   const dispatch = useDispatch();
 
-  let orderData = orderModalData;
-  const orderNumber = Number(number);
+  let orderData = orderSelected;
+  let orderNumber = Number(number);
 
   // для отображения на отдельном экране
   useEffect(() => {

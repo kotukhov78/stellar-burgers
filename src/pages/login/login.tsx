@@ -6,7 +6,7 @@ import {
   login,
   selectIsAuthChecked,
   selectUserError
-} from '../../components/slices/userSlice';
+} from '../../services/slices/userSlice';
 
 export const Login: FC = () => {
   const dispatch = useDispatch();

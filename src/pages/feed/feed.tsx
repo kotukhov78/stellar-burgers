@@ -6,7 +6,7 @@ import {
   selectFeeds,
   selectFeedsError,
   selectFeedsLoading
-} from '../../components/slices/feedsSlice';
+} from '../../services/slices/feedsSlice';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const Feed: FC = () => {
@@ -29,7 +29,7 @@ export const Feed: FC = () => {
   }
 
   if (error) {
-    return <div>Ошибка: {error}</div>;
+    return <div>Ошибка получения списка всех заказов: {error}</div>;
   }
 
   return <FeedUI orders={orders} handleGetFeeds={handleGetFeeds} />;

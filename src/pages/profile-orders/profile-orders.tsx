@@ -4,7 +4,7 @@ import {
   fetchProfileOrders,
   selectProfileOrdersLoading,
   selectProfileOrders
-} from '../../components/slices/profileOrdersSlice';
+} from '../../services/slices/profileOrdersSlice';
 import { useDispatch, useSelector } from '../../services/store';
 import { Preloader } from '@ui';
 

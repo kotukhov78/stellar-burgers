@@ -4,7 +4,7 @@ import {
   selectIsAuthChecked,
   selectUser,
   selectUserLoading
-} from '../slices/userSlice';
+} from '../../services/slices/userSlice';
 import { Preloader } from '@ui';
 
 type ProtectedRouteProps = {

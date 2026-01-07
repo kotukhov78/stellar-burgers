@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder } from '../../utils/types';
 import { getOrdersApi } from '../../utils/burger-api';
-import { RootState } from '../../services/store';
+import { RootState } from '../store';
 
 type TOrdersState = {
   orders: TOrder[];
