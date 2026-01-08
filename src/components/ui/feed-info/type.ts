@@ -1,5 +1,12 @@
+export interface FeedData {
+  total: number;
+  totalToday: number;
+  // Декларируем, что могут быть и другие поля, но мы их не используем
+  [key: string]: unknown;
+}
+
 export type FeedInfoUIProps = {
-  feed: any;
+  feed: FeedData;
   readyOrders: number[];
   pendingOrders: number[];
 };

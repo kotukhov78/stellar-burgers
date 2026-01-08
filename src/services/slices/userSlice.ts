@@ -26,57 +26,92 @@ export const initialState: TUserState = {
   error: undefined
 };
 
-export const checkUserAuth = createAsyncThunk(
-  'user/checkUserAuth',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getUserApi();
-      return response.user;
-    } catch (error) {
-      return rejectWithValue((error as Error).message);
-    }
-  }
-);
+// Определяем типы для ответов от API
+type TAuthResponse = {
+  user: TUser;
+  accessToken: string;
+  refreshToken: string;
+};
 
-export const updateUser = createAsyncThunk(
+type TUpdateUserResponse = {
+  user: TUser;
+};
+
+type TErrorResponse = {
+  message: string;
+};
+
+export const checkUserAuth = createAsyncThunk<
+  TUser, // Тип возвращаемого значения при успехе
+  void, // Тип аргумента
+  {
+    rejectValue: string; // Тип возвращаемого значения при ошибке
+  }
+>('user/checkUserAuth', async (_, { rejectWithValue }) => {
+  try {
+    const response = await getUserApi();
+    return response.user;
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : 'Ошибка получения пользователя с сервера';
+    return rejectWithValue(errorMessage);
+  }
+});
+
+export const updateUser = createAsyncThunk<
+  TUser,
+  { name?: string; email?: string; password?: string }
+>(
   'user/updateUser',
   async (userData: { name?: string; email?: string; password?: string }) => {
-    const response = await updateUserApi(userData);
+    const response: TUpdateUserResponse = await updateUserApi(userData);
     return response.user;
   }
 );
 
-export const login = createAsyncThunk(
-  'user/login',
-  async (data: TLoginData, { rejectWithValue }) => {
-    try {
-      const res = await loginUserApi(data);
-
-      localStorage.setItem('refreshToken', res.refreshToken);
-      setCookie('accessToken', res.accessToken);
-
-      return res.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
+export const login = createAsyncThunk<
+  TUser,
+  TLoginData,
+  {
+    rejectValue: string;
   }
-);
+>('user/login', async (data: TLoginData, { rejectWithValue }) => {
+  try {
+    const res: TAuthResponse = await loginUserApi(data);
 
-export const register = createAsyncThunk(
-  'user/register',
-  async (data: TRegisterData, { rejectWithValue }) => {
-    try {
-      const res = await registerUserApi(data);
+    localStorage.setItem('refreshToken', res.refreshToken);
+    setCookie('accessToken', res.accessToken);
 
-      localStorage.setItem('refreshToken', res.refreshToken);
-      setCookie('accessToken', res.accessToken);
-
-      return res.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
+    return res.user;
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Ошибка входа по логину';
+    return rejectWithValue(errorMessage);
   }
-);
+});
+
+export const register = createAsyncThunk<
+  TUser,
+  TRegisterData,
+  {
+    rejectValue: string;
+  }
+>('user/register', async (data: TRegisterData, { rejectWithValue }) => {
+  try {
+    const res: TAuthResponse = await registerUserApi(data);
+
+    localStorage.setItem('refreshToken', res.refreshToken);
+    setCookie('accessToken', res.accessToken);
+
+    return res.user;
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Ошибка при регистрации';
+    return rejectWithValue(errorMessage);
+  }
+});
 
 export const logout = createAsyncThunk('user/logout', async () => {
   await logoutApi();
@@ -98,6 +133,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
+        state.error = undefined;
       })
       .addCase(checkUserAuth.rejected, (state, action) => {
         state.isLoading = false;
@@ -106,8 +142,17 @@ const userSlice = createSlice({
           action.error.message ?? 'Ошибка получения пользователя с сервера';
       })
 
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
+        state.error = undefined;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message ?? 'Ошибка обновления пользователя';
       })
 
       .addCase(login.pending, (state) => {
@@ -118,6 +163,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
+        state.error = undefined;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -132,6 +178,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload;
         state.isAuthChecked = true;
+        state.error = undefined;
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
@@ -139,9 +186,18 @@ const userSlice = createSlice({
         state.error = action.error.message ?? 'Ошибка при регистрации';
       })
 
+      .addCase(logout.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(logout.fulfilled, (state) => {
+        state.isLoading = false;
         state.user = null;
         state.isAuthChecked = false;
+        state.error = undefined;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message ?? 'Ошибка выхода';
       });
   }
 });

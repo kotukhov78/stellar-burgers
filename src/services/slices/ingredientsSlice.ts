@@ -21,17 +21,31 @@ const initialState: TIngredientsState = {
   sauces: []
 };
 
+// Определяем тип для ошибки
+interface IApiError {
+  message: string;
+}
+
 // Асинхронная Thunk-функция
-export const getIngredients = createAsyncThunk(
-  'ingredients/getIngredients',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await getIngredientsApi();
-    } catch (e: any) {
+export const getIngredients = createAsyncThunk<
+  TIngredient[], // Тип возвращаемого значения при успехе
+  void, // Тип аргументов (ничего)
+  {
+    rejectValue: string; // Тип значения при rejectWithValue
+  }
+>('ingredients/getIngredients', async (_, { rejectWithValue }) => {
+  try {
+    return await getIngredientsApi();
+  } catch (e: unknown) {
+    // Более безопасная обработка ошибок
+    if (e instanceof Error) {
       return rejectWithValue(e.message);
     }
+    // Обработка случаев, когда ошибка не является экземпляром Error
+    const error = e as IApiError;
+    return rejectWithValue(error.message || 'Неизвестная ошибка');
   }
-);
+});
 
 const ingredientsSlice = createSlice({
   name: 'ingredients',

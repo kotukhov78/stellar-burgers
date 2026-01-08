@@ -15,16 +15,33 @@ const initialState: TOrdersState = {
   error: null
 };
 
-export const fetchProfileOrders = createAsyncThunk(
-  'profileOrders/fetchProfileOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await getOrdersApi();
-    } catch (e: any) {
-      return rejectWithValue(e.message || 'Ошибка загрузки заказов');
-    }
+// Тип для ошибки
+type ThunkApiError = {
+  message?: string;
+};
+
+export const fetchProfileOrders = createAsyncThunk<
+  TOrder[], // Тип возвращаемого значения
+  void, // Тип аргумента (пусто, так как используем _)
+  {
+    rejectValue: string; // Тип значения при rejectWithValue
   }
-);
+>('profileOrders/fetchProfileOrders', async (_, { rejectWithValue }) => {
+  try {
+    return await getOrdersApi();
+  } catch (e: unknown) {
+    let errorMessage = 'Ошибка загрузки заказов';
+
+    if (e instanceof Error) {
+      errorMessage = e.message;
+    } else if (typeof e === 'object' && e !== null && 'message' in e) {
+      const error = e as ThunkApiError;
+      errorMessage = error.message || errorMessage;
+    }
+
+    return rejectWithValue(errorMessage);
+  }
+});
 
 const profileOrdersSlice = createSlice({
   name: 'profileOrders',
@@ -45,7 +62,7 @@ const profileOrdersSlice = createSlice({
       )
       .addCase(fetchProfileOrders.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload ?? 'Неизвестная ошибка';
       })
 });
 
