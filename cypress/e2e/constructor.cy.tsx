@@ -32,6 +32,15 @@ describe('Проверяем страницу конструктора бург�
     cy.wait('@getIngredients');
   });
 
+  afterEach(() => {
+    // Очищаем токен
+    window.localStorage.setItem('refreshToken', '');
+    cy.setCookie('accessToken', '');
+    // Полностью очищаем хранилище и куки
+    // cy.clearLocalStorage();
+    // cy.clearCookies();
+  });
+
   it('ингридиенты должны отображаться', () => {
     cy.contains('Соберите бургер').should('be.visible');
     cy.get('[data-testid=ingredient-items]').should('have.length.gt', 0);
