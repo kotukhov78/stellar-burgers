@@ -37,9 +37,10 @@ type TUpdateUserResponse = {
   user: TUser;
 };
 
-type TErrorResponse = {
-  message: string;
-};
+// Определяем тип для ошибки
+// type TErrorResponse = {
+//   message: string;
+// };
 
 export const checkUserAuth = createAsyncThunk<
   TUser, // Тип возвращаемого значения при успехе
@@ -202,7 +203,6 @@ const userSlice = createSlice({
   }
 });
 
-// export const { setAuthChecked } = userSlice.actions;
 export default userSlice.reducer;
 
 // Селекторы

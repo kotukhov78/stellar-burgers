@@ -3,7 +3,7 @@ import { TOrder } from '../../utils/types';
 import { getOrdersApi } from '../../utils/burger-api';
 import { RootState } from '../store';
 
-type TOrdersState = {
+export type TOrdersState = {
   orders: TOrder[];
   isLoading: boolean;
   error: string | null;
@@ -62,7 +62,7 @@ const profileOrdersSlice = createSlice({
       )
       .addCase(fetchProfileOrders.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload ?? 'Неизвестная ошибка';
+        state.error = action.payload ?? 'Ошибка загрузки заказов';
       })
 });
 
