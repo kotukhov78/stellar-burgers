@@ -1,11 +1,5 @@
 /// <reference types="cypress" />
 
-describe('проверяем доступность приложения', function () {
-  it('сервис должен быть доступен по адресу localhost:4000', function () {
-    cy.visit('http://localhost:4000');
-  });
-});
-
 describe('Проверяем страницу конструктора бургеров', () => {
   beforeEach(() => {
     // Загружаем моки
@@ -33,12 +27,9 @@ describe('Проверяем страницу конструктора бург�
   });
 
   afterEach(() => {
-    // Очищаем токен
-    window.localStorage.setItem('refreshToken', '');
-    cy.setCookie('accessToken', '');
     // Полностью очищаем хранилище и куки
-    // cy.clearLocalStorage();
-    // cy.clearCookies();
+    cy.clearLocalStorage();
+    cy.clearCookies();
   });
 
   it('ингридиенты должны отображаться', () => {
@@ -74,6 +65,12 @@ describe('Проверяем страницу конструктора бург�
     cy.get('[data-testid=modal]').should('not.exist');
   });
 
+  it('Закрытие модального окна по Esc', () => {
+    cy.get('[data-testid=ingredient-item]').contains('Краторная булка').click();
+    cy.get('body').type('{esc}');
+    cy.get('[data-testid=modal]').should('not.exist');
+  });
+
   it('Закрытие модального окна по оверлею', () => {
     cy.get('[data-testid=ingredient-item]').contains('Краторная булка').click();
     cy.get('[data-testid=modal-overlay]').click({ force: true });
@@ -99,6 +96,9 @@ describe('Проверяем страницу конструктора бург�
 
     // Проверяем, что конструктор пуст
     cy.get('[data-testid=constructor-bun]').should('not.exist');
-    cy.get('[data-testid=constructor-main]').should('have.length', 1);
+    cy.get('[data-testid=constructor-main-null]').should(
+      'contain',
+      'Выберите начинку'
+    );
   });
 });

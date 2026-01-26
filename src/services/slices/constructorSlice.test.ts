@@ -49,7 +49,7 @@ describe('constructorSlice', () => {
 
     expect(state.bun).toEqual({
       ...mockBun,
-      id: expect.any(String)
+      id: expect.stringContaining('')
     });
     expect(state.ingredients).toHaveLength(0);
   });
@@ -62,7 +62,7 @@ describe('constructorSlice', () => {
     expect(state.ingredients).toHaveLength(1);
     expect(state.ingredients[0]).toEqual({
       ...mockMain,
-      id: expect.any(String)
+      id: expect.stringContaining('')
     });
   });
 

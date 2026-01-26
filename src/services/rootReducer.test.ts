@@ -1,9 +1,8 @@
 import { rootReducer } from './rootReducer';
-import { TIngredient } from '../utils/types';
 
 describe('rootReducer', () => {
   it('должен инициализировать начальное состояние всех слайсов', () => {
-    const state = rootReducer(undefined, { type: '@@INIT' });
+    const state = rootReducer(undefined, { type: 'UNKNOWN_ACTION' });
 
     expect(state.ingredients).toEqual({
       ingredients: [],
